@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "164664133583",
+    "project_id": "socialsharing-83f5d",
+    "storage_bucket": "socialsharing-83f5d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:164664133583:android:26f1e16c8a2fdd388bf4ba",
+        "android_client_info": {
+          "package_name": "com.vladima.cursandroid"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "164664133583-a9nt974m6esgmgndgmlsmg21h6hbj322.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBnvN0dCVtbkydNcem7mCe_zfY3BvMWcUY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "164664133583-a9nt974m6esgmgndgmlsmg21h6hbj322.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
