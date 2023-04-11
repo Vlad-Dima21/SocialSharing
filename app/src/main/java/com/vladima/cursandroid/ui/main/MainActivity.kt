@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.vladima.cursandroid.R
 import com.vladima.cursandroid.databinding.ActivityMainBinding
+import com.vladima.cursandroid.ui.main.home.HomeFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,6 +15,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
+        setSupportActionBar(binding.materialToolbar2)
+
         setContentView(binding.root)
         replaceFragment(HomeFragment())
 

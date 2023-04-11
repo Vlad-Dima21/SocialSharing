@@ -1,17 +1,22 @@
-package com.vladima.cursandroid.ui.main
+package com.vladima.cursandroid.ui.main.home
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.vladima.cursandroid.R
 import com.vladima.cursandroid.databinding.FragmentHomeBinding
 import com.vladima.cursandroid.models.User
+import com.vladima.cursandroid.models.UserPost
 import com.vladima.cursandroid.ui.authentication.AuthenticateActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +32,7 @@ import kotlinx.coroutines.withContext
 class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
+    private lateinit var userPosts: List<UserPost>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,23 +44,42 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val auth = FirebaseAuth.getInstance()
-        val usersCollection = Firebase.firestore.collection("users")
+        val viewModel: HomeViewModel by viewModels()
 
         binding = FragmentHomeBinding.inflate(layoutInflater)
+        (activity as AppCompatActivity).supportActionBar?.let {
+            it.title = getString(R.string.your_recent_activity)
+        }
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val currentUser = usersCollection.whereEqualTo("userUID", auth.currentUser!!.uid).get().await().documents[0].toObject(User::class.java)
-            withContext(Dispatchers.Main) {
-                binding.homeText.text = "Hello ${currentUser?.userName}"
+        lifecycleScope.launch {
+            viewModel.userPosts.collect { list ->
+                if (list.isNotEmpty()) {
+                    with(binding) {
+                        rvPosts.layoutManager = LinearLayoutManager(context)
+                        rvPosts.adapter = HomeAdapter(list)
+                    }
+                }
             }
         }
 
-        binding.logoutBtn.setOnClickListener {
-            auth.signOut()
-            activity?.startActivity(Intent(activity, AuthenticateActivity::class.java))
-            activity?.finish()
+        lifecycleScope.launch {
+            viewModel.isLoading.collect { isLoading ->
+                if (isLoading) {
+                    withContext(Dispatchers.Main) {
+                        with(binding) {
+                            progressBar.visibility = View.VISIBLE
+                        }
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        with(binding) {
+                            progressBar.visibility = View.GONE
+                        }
+                    }
+                }
+            }
         }
+
         // Inflate the layout for this fragment
         return binding.root
     }

@@ -1,21 +1,29 @@
 package com.vladima.cursandroid.ui.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.vladima.cursandroid.R
+import com.vladima.cursandroid.databinding.FragmentHomeBinding
+import com.vladima.cursandroid.databinding.FragmentSettingsBinding
+import com.vladima.cursandroid.models.User
+import com.vladima.cursandroid.ui.authentication.AuthenticateActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
-/**
- * A simple [Fragment] subclass.
- * Use the [SettingsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SettingsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+    private lateinit var binding: FragmentSettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,9 +34,34 @@ class SettingsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_settings, container, false)
+    ): View {
+        binding = FragmentSettingsBinding.inflate(layoutInflater)
+        (activity as AppCompatActivity).supportActionBar?.let {
+            it.title = getString(R.string.settings)
+        }
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+
+        val auth = FirebaseAuth.getInstance()
+        val usersCollection = Firebase.firestore.collection("users")
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val currentUser = usersCollection.whereEqualTo("userUID", auth.currentUser!!.uid).get().await().documents[0].toObject(
+                User::class.java)
+            withContext(Dispatchers.Main) {
+                binding.homeText.text = "Hello ${currentUser?.userName}"
+            }
+        }
+
+        binding.logoutBtn.setOnClickListener {
+            auth.signOut()
+            activity?.startActivity(Intent(activity, AuthenticateActivity::class.java))
+            activity?.finish()
+        }
     }
 
     companion object {
