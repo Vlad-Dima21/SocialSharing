@@ -15,13 +15,18 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.FileProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.vladima.cursandroid.R
 import com.vladima.cursandroid.Utils
 import com.vladima.cursandroid.databinding.ActivityCreatePostBinding
+import com.vladima.cursandroid.models.DbUserPost
+import com.vladima.cursandroid.models.UserPost
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -42,10 +47,6 @@ class CreatePostActivity : AppCompatActivity() {
         binding = ActivityCreatePostBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        capturedPhoto = savedInstanceState?.let {
-            return@let it.getBoolean("capturedPhoto")
-        } ?: false
-
         savedInstanceState?.let {
             capturedPhoto = it.getBoolean("capturedPhoto")
             imageFile = it.getString("imageFilePath")?.let { it1 -> File(it1) }
@@ -58,17 +59,36 @@ class CreatePostActivity : AppCompatActivity() {
             setImageView()
         }
 
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm")
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss")
         val current = LocalDateTime.now().format(formatter)
 
         val auth = FirebaseAuth.getInstance()
         val storageRef = FirebaseStorage.getInstance().reference.child("${auth.currentUser!!.uid}/$current")
 
         binding.createPostBtn.setOnClickListener {
+            if (binding.descriptionEdt.text.toString().isEmpty()) {
+                binding.description.helperText = "Please enter description first"
+                return@setOnClickListener
+            }
+            binding.description.helperText = ""
             binding.progressBar.visibility = View.VISIBLE
             CoroutineScope(Dispatchers.IO).launch {
                 storageRef.putFile(getFinalFileUri(imageFile!!)).addOnSuccessListener {
-                    Toast.makeText(this@CreatePostActivity, "Image uploaded", Toast.LENGTH_SHORT).show()
+
+                    val userPostCollection = Firebase.firestore.collection("userPosts")
+                    val currentUser = auth.currentUser!!
+                    userPostCollection.add(
+                        DbUserPost(
+                            current,
+                            currentUser.uid,
+                            binding.descriptionEdt.text.toString()
+                        )
+                    )
+                    imageFile!!.delete()
+                    Toast.makeText(this@CreatePostActivity, getString(R.string.post_success), Toast.LENGTH_SHORT).show()
+                    finish()
+                }.addOnFailureListener {
+                    Toast.makeText(this@CreatePostActivity, getString(R.string.post_error), Toast.LENGTH_SHORT).show()
                     finish()
                 }
             }
@@ -86,7 +106,7 @@ class CreatePostActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createFileForPhoto() {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm")
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss")
         val current = LocalDateTime.now().format(formatter)
         imageFile = File(filesDir, current)
         imageFile!!.createNewFile()
@@ -122,14 +142,13 @@ class CreatePostActivity : AppCompatActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun getFinalFileUri(file: File): Uri {
 
         var bitmap = BitmapFactory.decodeFile(imageFile!!.path)
         bitmap = Utils.rotateImage(bitmap, 90f)
 
         val byteStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, byteStream)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteStream)
         val bitData = byteStream.toByteArray()
 
         val fileOutput = FileOutputStream(file)

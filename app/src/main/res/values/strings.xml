@@ -64,4 +64,7 @@
     <string name="create_post">Create post</string>
     <string name="new_image_post">New image post</string>
     <string name="action_cancelled">Action cancelled</string>
+    <string name="post_description">Post description</string>
+    <string name="post_error">There was an error creating the post</string>
+    <string name="post_success">Post created</string>
 </resources>

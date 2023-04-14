@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
@@ -29,7 +30,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-class HomeFragment(private val viewModel: HomeViewModel) : Fragment() {
+class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
     private var userPosts = listOf<UserPost>()
@@ -38,18 +39,25 @@ class HomeFragment(private val viewModel: HomeViewModel) : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        val viewModel =
+            ViewModelProvider(activity as ViewModelStoreOwner)[HomeViewModel::class.java]
+
         binding = FragmentHomeBinding.inflate(layoutInflater)
         (activity as AppCompatActivity).supportActionBar?.let {
             it.title = getString(R.string.your_recent_activity)
         }
 
-        binding.rvPosts.addItemDecoration(MarginItemDecoration(100))
+        binding.rvPosts.addItemDecoration(MarginItemDecoration(80))
 
         lifecycleScope.launch {
             viewModel.userPosts.collect { list ->
-                if (list.isNotEmpty()) {
-                    with(binding) {
+                with(binding) {
+                    if (userPosts.isEmpty() && list.isNotEmpty()) {
                         rvPosts.layoutManager = LinearLayoutManager(context)
+                        userPosts = list
+                        rvPosts.adapter = HomeAdapter(userPosts)
+                    } else {
                         userPosts = list
                         rvPosts.adapter = HomeAdapter(userPosts)
                     }
@@ -71,6 +79,8 @@ class HomeFragment(private val viewModel: HomeViewModel) : Fragment() {
                             swipeRefresh.isRefreshing = false
                             if (userPosts.isEmpty()) {
                                 noPosts.visibility = View.VISIBLE
+                            } else {
+                                noPosts.visibility = View.GONE
                             }
                         }
                     }

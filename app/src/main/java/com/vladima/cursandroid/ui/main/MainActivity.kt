@@ -23,11 +23,11 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.materialToolbar2)
 
         setContentView(binding.root)
-        replaceFragment(HomeFragment(homeViewModel))
+        replaceFragment(HomeFragment())
 
         binding.bottomNavigationView.setOnItemSelectedListener { item ->
             when(item.itemId) {
-                R.id.home -> replaceFragment(HomeFragment(homeViewModel))
+                R.id.home -> replaceFragment(HomeFragment())
                 R.id.friends -> replaceFragment(FriendsFragment())
                 R.id.settings -> replaceFragment(SettingsFragment())
             }
