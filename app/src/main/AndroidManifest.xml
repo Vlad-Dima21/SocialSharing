@@ -12,19 +12,29 @@
         android:theme="@style/Theme.SocialSharing"
         tools:targetApi="31">
         <activity
+            android:name=".ui.main.new_post.CreatePostActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.main.MainActivity"
             android:exported="false" />
         <activity
             android:name=".ui.authentication.AuthenticateActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.SocialSharing">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.vladima.cursandroid.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

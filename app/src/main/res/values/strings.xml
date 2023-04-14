@@ -60,4 +60,8 @@
     <string name="friends">Friends</string>
     <string name="settings">Settings</string>
     <string name="your_recent_activity">Your recent activity</string>
+    <string name="posted_images_will_be_shown_here">Posted images will be shown here</string>
+    <string name="create_post">Create post</string>
+    <string name="new_image_post">New image post</string>
+    <string name="action_cancelled">Action cancelled</string>
 </resources>

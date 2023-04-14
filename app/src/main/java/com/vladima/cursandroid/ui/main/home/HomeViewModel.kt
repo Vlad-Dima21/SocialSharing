@@ -9,6 +9,7 @@ import com.vladima.cursandroid.models.User
 import com.vladima.cursandroid.models.UserPost
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -34,25 +35,33 @@ class HomeViewModel: ViewModel() {
         loadCurrentUserPosts()
     }
 
-    private fun loadCurrentUserPosts() = CoroutineScope(Dispatchers.IO).launch {
+    fun loadCurrentUserPosts() = CoroutineScope(Dispatchers.IO).launch {
         _isLoading.emit(true)
         val imageRefs = storageRef.listAll().await()
-        _userPosts.emit(
-            imageRefs.items.mapIndexed { index, storageReference ->
-                val localFile = File.createTempFile("${auth.currentUser!!.uid}_$index", "jpg")
-                tempFiles.add(localFile)
-                storageReference.getFile(localFile).await()
-                val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
-                UserPost(bitmap!!)
-            }
-        )
+        val userPosts = mutableListOf<UserPost>()
+        val jobs = mutableListOf<Job>()
+        imageRefs.items.forEachIndexed { index, storageReference ->
+            jobs.add(
+                launch(Dispatchers.IO) {
+//                    val localFile = File.createTempFile("${auth.currentUser!!.uid}_$index", "jpg")
+                    val localFile = File.createTempFile(storageReference.name, "jpg")
+                    tempFiles.add(localFile)
+                    storageReference.getFile(localFile).await()
+                    val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+                    userPosts.add(UserPost(bitmap!!, storageReference.name))
+                }
+            )
+        }
+        jobs.forEach {
+            it.join()
+        }
+        userPosts.sortBy { it.imageDescription }
+        _userPosts.emit(userPosts)
         _isLoading.emit(false)
+        clearCache()
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        tempFiles.forEach {
-            it.delete()
-        }
+    fun clearCache() = tempFiles.forEach {
+        it.delete()
     }
 }

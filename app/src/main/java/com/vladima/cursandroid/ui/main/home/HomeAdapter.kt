@@ -23,6 +23,7 @@ class HomeAdapter(
         with(holder) {
             with(userPosts[position]) {
                 binding.imageView.setImageBitmap(imageBitmap)
+                binding.imageDescription.text = imageDescription
             }
         }
     }
