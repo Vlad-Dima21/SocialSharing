@@ -148,7 +148,8 @@ class CreatePostActivity : AppCompatActivity() {
         bitmap = Utils.rotateImage(bitmap, 90f)
 
         val byteStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteStream)
+        // calitate putin mai mica pentru a reduce spatiul consumat pe storage
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, byteStream)
         val bitData = byteStream.toByteArray()
 
         val fileOutput = FileOutputStream(file)

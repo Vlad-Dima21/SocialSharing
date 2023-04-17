@@ -65,8 +65,9 @@ class HomeViewModel: ViewModel() {
         jobs.forEach {
             it.join()
         }
-        userPosts.sortedByDescending { dbUserPosts.find { it2 -> it2.fileName == it.fileName }?.createDate }
-        _userPosts.emit(userPosts)
+        _userPosts.emit(
+            userPosts.sortedByDescending { dbUserPosts.find { it2 -> it2.fileName == it.fileName }?.createDate }
+        )
         _isLoading.emit(false)
         clearCache()
     }

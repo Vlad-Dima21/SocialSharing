@@ -31,6 +31,7 @@ class FriendsFragment : Fragment() {
 
         binding = FragmentFriendsBinding.inflate(layoutInflater)
         (activity as AppCompatActivity).supportActionBar?.let {
+            it.show()
             it.title = getString(R.string.friends)
         }
 

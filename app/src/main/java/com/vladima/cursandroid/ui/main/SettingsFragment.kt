@@ -37,6 +37,7 @@ class SettingsFragment : Fragment() {
     ): View {
         binding = FragmentSettingsBinding.inflate(layoutInflater)
         (activity as AppCompatActivity).supportActionBar?.let {
+            it.show()
             it.title = getString(R.string.settings)
         }
         return binding.root

@@ -7,7 +7,7 @@ import com.vladima.cursandroid.databinding.ImageViewholderBinding
 import com.vladima.cursandroid.models.UserPost
 
 class HomeAdapter(
-    private val userPosts: List<UserPost>
+    private var userPosts: List<UserPost>
 ): RecyclerView.Adapter<HomeAdapter.ImageViewHolder>() {
 
     inner class ImageViewHolder(val binding: ImageViewholderBinding) : RecyclerView.ViewHolder(binding.root)
@@ -26,5 +26,10 @@ class HomeAdapter(
                 binding.imageDescription.text = imageDescription
             }
         }
+    }
+
+    fun setNewPosts(newList: List<UserPost>) {
+        userPosts = newList
+        notifyDataSetChanged()
     }
 }
