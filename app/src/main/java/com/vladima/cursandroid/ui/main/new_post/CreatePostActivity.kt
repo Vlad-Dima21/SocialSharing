@@ -12,7 +12,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.FileProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
@@ -22,11 +21,9 @@ import com.vladima.cursandroid.R
 import com.vladima.cursandroid.Utils
 import com.vladima.cursandroid.databinding.ActivityCreatePostBinding
 import com.vladima.cursandroid.models.DbUserPost
-import com.vladima.cursandroid.models.UserPost
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream

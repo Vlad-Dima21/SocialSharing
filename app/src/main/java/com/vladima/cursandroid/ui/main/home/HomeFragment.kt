@@ -5,36 +5,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SearchView
-import android.widget.SearchView.OnQueryTextListener
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.ui.text.toLowerCase
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentFactory
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.vladima.cursandroid.R
 import com.vladima.cursandroid.databinding.FragmentHomeBinding
-import com.vladima.cursandroid.models.User
-import com.vladima.cursandroid.models.UserPost
+import com.vladima.cursandroid.models.RVUserPost
 import com.vladima.cursandroid.ui.MarginItemDecoration
-import com.vladima.cursandroid.ui.authentication.AuthenticateActivity
-import com.vladima.cursandroid.ui.main.FriendsFragment
 import com.vladima.cursandroid.ui.main.new_post.CreatePostActivity
 import kotlinx.coroutines.*
-import kotlinx.coroutines.tasks.await
-import java.util.*
 
 class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
-    private var userPosts = listOf<UserPost>()
+    private var posts = listOf<RVUserPost>()
     private var postsAdapter = HomeAdapter(listOf())
 
     override fun onCreateView(
@@ -56,8 +42,8 @@ class HomeFragment : Fragment() {
 
         lifecycleScope.launch {
             viewModel.userPosts.collect { list ->
-                userPosts = list
-                postsAdapter.setNewPosts(userPosts)
+                posts = list
+                postsAdapter.setNewPosts(posts)
             }
         }
 
@@ -73,7 +59,7 @@ class HomeFragment : Fragment() {
                     withContext(Dispatchers.Main) {
                         with(binding) {
                             swipeRefresh.isRefreshing = false
-                            if (userPosts.isEmpty()) {
+                            if (posts.isEmpty()) {
                                 noPosts.visibility = View.VISIBLE
                             } else {
                                 noPosts.visibility = View.GONE
@@ -118,7 +104,7 @@ class HomeFragment : Fragment() {
                 delay(500)
             }
             postsAdapter.setNewPosts(
-                userPosts.filter {
+                posts.filter {
                     it.imageDescription.lowercase().contains(filter.lowercase())
                 }
             )

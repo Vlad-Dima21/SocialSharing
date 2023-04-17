@@ -4,10 +4,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.vladima.cursandroid.databinding.ImageViewholderBinding
-import com.vladima.cursandroid.models.UserPost
+import com.vladima.cursandroid.models.RVUserPost
 
 class HomeAdapter(
-    private var userPosts: List<UserPost>
+    private var posts: List<RVUserPost>
 ): RecyclerView.Adapter<HomeAdapter.ImageViewHolder>() {
 
     inner class ImageViewHolder(val binding: ImageViewholderBinding) : RecyclerView.ViewHolder(binding.root)
@@ -17,19 +17,19 @@ class HomeAdapter(
         return ImageViewHolder(binding)
     }
 
-    override fun getItemCount(): Int = userPosts.size
+    override fun getItemCount(): Int = posts.size
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
         with(holder) {
-            with(userPosts[position]) {
+            with(posts[position]) {
                 binding.imageView.setImageBitmap(imageBitmap)
                 binding.imageDescription.text = imageDescription
             }
         }
     }
 
-    fun setNewPosts(newList: List<UserPost>) {
-        userPosts = newList
+    fun setNewPosts(newList: List<RVUserPost>) {
+        posts = newList
         notifyDataSetChanged()
     }
 }

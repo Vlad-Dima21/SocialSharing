@@ -2,15 +2,13 @@ package com.vladima.cursandroid.ui.main.home
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.vladima.cursandroid.models.DbUserPost
-import com.vladima.cursandroid.models.User
-import com.vladima.cursandroid.models.UserPost
+import com.vladima.cursandroid.models.RVUserPost
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -25,7 +23,7 @@ class HomeViewModel: ViewModel() {
     private val auth = FirebaseAuth.getInstance()
     private val storageRef = FirebaseStorage.getInstance().reference.child(auth.currentUser!!.uid)
 
-    private val _userPosts = MutableStateFlow(listOf<UserPost>())
+    private val _userPosts = MutableStateFlow(listOf<RVUserPost>())
     val userPosts = _userPosts.asStateFlow()
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
@@ -47,7 +45,7 @@ class HomeViewModel: ViewModel() {
         }
 
         val imageRefs = storageRef.listAll().await()
-        val userPosts = mutableListOf<UserPost>()
+        val posts = mutableListOf<RVUserPost>()
         val jobs = mutableListOf<Job>()
         imageRefs.items.forEachIndexed { index, storageReference ->
             jobs.add(
@@ -58,7 +56,7 @@ class HomeViewModel: ViewModel() {
                     val fbBitmap = BitmapFactory.decodeFile(localFile.absolutePath)
                     // codul de mai jos e pentru a reduce memoria consumata de imaginile din recycler view
                     val bitmap = Bitmap.createScaledBitmap(fbBitmap, fbBitmap.width / 2, fbBitmap.height / 2, false)
-                    userPosts.add(UserPost(storageReference.name, bitmap!!, dbUserPosts.find { it.fileName == storageReference.name }?.description ?: storageReference.name))
+                    posts.add(RVUserPost(storageReference.name, bitmap!!, dbUserPosts.find { it.fileName == storageReference.name }?.description ?: storageReference.name))
                 }
             )
         }
@@ -66,7 +64,7 @@ class HomeViewModel: ViewModel() {
             it.join()
         }
         _userPosts.emit(
-            userPosts.sortedByDescending { dbUserPosts.find { it2 -> it2.fileName == it.fileName }?.createDate }
+            posts.sortedByDescending { dbUserPosts.find { it2 -> it2.fileName == it.fileName }?.createDate }
         )
         _isLoading.emit(false)
         clearCache()

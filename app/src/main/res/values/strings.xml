@@ -67,4 +67,13 @@
     <string name="post_description">Post description</string>
     <string name="post_error">There was an error creating the post</string>
     <string name="post_success">Post created</string>
+    <string name="send_invite">Send friend invite</string>
+    <string name="no_friends">Add friends to view their posts</string>
+    <string name="friends_error">There was an error loading the friends list. Please try again</string>
+    <string name="friend_notification_title">New friend added</string>
+    <string name="friend_notification_content">You are now friends with  %1$s</string>
+    <string name="dialog_title">Add %1$s to your friends list?</string>
+    <string name="invite_error">There was an error fetching user data</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
 </resources>
