@@ -104,9 +104,15 @@ class FriendsViewModel @Inject constructor(
 
     fun alertNewFriend(userUID: String) = CoroutineScope(Dispatchers.IO).launch {
         currentUser = usersCollection.whereEqualTo("userUID", authUser.uid).get().await().documents[0].toObject(User::class.java)!!
+        if (currentUser.userUID == userUID) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(app, app.getString(R.string.send_others), Toast.LENGTH_SHORT).show()
+            }
+            return@launch
+        }
         if (currentUser.friends.contains(userUID)) {
             withContext(Dispatchers.Main) {
-                Toast.makeText(app, "Friend already added", Toast.LENGTH_SHORT).show()
+                Toast.makeText(app, app.getString(R.string.friend_already_added), Toast.LENGTH_SHORT).show()
             }
         } else {
             try {

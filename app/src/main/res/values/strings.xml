@@ -76,4 +76,6 @@
     <string name="invite_error">There was an error fetching user data</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
+    <string name="send_others">Send this link to other users</string>
+    <string name="friend_already_added">Friend already added</string>
 </resources>
