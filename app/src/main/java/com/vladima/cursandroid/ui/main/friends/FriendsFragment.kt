@@ -9,13 +9,23 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.vladima.cursandroid.R
 import com.vladima.cursandroid.databinding.FragmentFriendsBinding
+import com.vladima.cursandroid.models.RVUserPost
+import com.vladima.cursandroid.ui.MarginItemDecoration
+import com.vladima.cursandroid.ui.main.home.HomeAdapter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class FriendsFragment : Fragment() {
 
     private lateinit var binding: FragmentFriendsBinding
+    private var posts = listOf<RVUserPost>()
+    private var postsAdapter = HomeAdapter(listOf())
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,6 +42,44 @@ class FriendsFragment : Fragment() {
 
         val viewModel = ViewModelProvider(activity as ViewModelStoreOwner)[FriendsViewModel::class.java]
 
+        with(binding.rvPosts) {
+            addItemDecoration(MarginItemDecoration(80))
+            layoutManager = LinearLayoutManager(context)
+            adapter = postsAdapter
+        }
+
+        lifecycleScope.launch {
+            viewModel.friendsPosts.collect { list ->
+                posts = list
+                postsAdapter.setNewPosts(posts)
+                withContext(Dispatchers.Main) {
+                    if (posts.isEmpty()) {
+                        binding.noFriends.visibility = View.VISIBLE
+                    } else {
+                        binding.noFriends.visibility = View.GONE
+                    }
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.isLoading.collect { isLoading ->
+                if (isLoading) {
+                    withContext(Dispatchers.Main) {
+                        with(binding) {
+                            swipeRefresh.isRefreshing = true
+                        }
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        with(binding) {
+                            swipeRefresh.isRefreshing = false
+                        }
+                    }
+                }
+            }
+        }
+
         binding.addFriends.setOnClickListener {
             startActivity(
                 Intent.createChooser(
@@ -42,6 +90,10 @@ class FriendsFragment : Fragment() {
                     "Share link"
                 )
             )
+        }
+
+        binding.swipeRefresh.setOnRefreshListener {
+            viewModel.getFriendsPosts()
         }
 
         return binding.root

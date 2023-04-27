@@ -51,10 +51,12 @@ class SettingsFragment : Fragment() {
         val usersCollection = Firebase.firestore.collection("users")
 
         CoroutineScope(Dispatchers.IO).launch {
-            val currentUser = usersCollection.whereEqualTo("userUID", auth.currentUser!!.uid).get().await().documents[0].toObject(
-                User::class.java)
+            val currentUser = usersCollection.whereEqualTo("userUID", auth.currentUser!!.uid).get()
+                .await().documents[0].toObject(
+                User::class.java
+            )!!
             withContext(Dispatchers.Main) {
-                binding.homeText.text = "Hello ${currentUser?.userName}"
+                binding.homeText.text = getString(R.string.logged_in_as, currentUser.userName)
             }
         }
 

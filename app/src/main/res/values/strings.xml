@@ -73,9 +73,11 @@
     <string name="friend_notification_title">New friend added</string>
     <string name="friend_notification_content">You are now friends with  %1$s</string>
     <string name="dialog_title">Add %1$s to your friends list?</string>
+    <string name="logged_in_as">You are currently logged in as %1$s</string>
     <string name="invite_error">There was an error fetching user data</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
     <string name="send_others">Send this link to other users</string>
     <string name="friend_already_added">Friend already added</string>
+    <string name="logout">Logout</string>
 </resources>

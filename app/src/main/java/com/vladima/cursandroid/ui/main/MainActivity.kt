@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var friendsViewModel: FriendsViewModel
+    private var selectedBottomId = R.id.home
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,13 +43,23 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.materialToolbar2)
         setContentView(binding.root)
 
-
         intent.getBooleanExtra("friend_added", false).let {
             if (it) {
                 replaceFragment(FriendsFragment())
                 binding.bottomNavigationView.selectedItemId = R.id.friends
             } else {
                 replaceFragment(HomeFragment())
+            }
+        }
+
+        savedInstanceState?.getInt("selectedBottomItem").let {
+            when (it) {
+                R.id.home -> replaceFragment(HomeFragment())
+                R.id.friends -> replaceFragment(FriendsFragment())
+                R.id.settings -> replaceFragment(SettingsFragment())
+            }
+            if (it != null) {
+                selectedBottomId = it
             }
         }
 
@@ -91,6 +102,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.friends -> replaceFragment(FriendsFragment())
                 R.id.settings -> replaceFragment(SettingsFragment())
             }
+            selectedBottomId = item.itemId
             true
         }
 
@@ -114,5 +126,10 @@ class MainActivity : AppCompatActivity() {
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frame_layout, fragment)
         fragmentTransaction.commit()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("selectedBottomItem", selectedBottomId)
     }
 }
