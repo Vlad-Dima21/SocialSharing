@@ -177,6 +177,7 @@ class FriendsViewModel @Inject constructor(
             val friendImageRefs = storage.reference.child(friendUID).listAll().await()
             val jobs = mutableListOf<Job>()
             friendImageRefs.items.forEachIndexed { index, storageReference ->
+                println("${storageReference.name}: ${storageReference.downloadUrl.await()}")
                 jobs.add(
                     launch(Dispatchers.IO) {
                         val localFile = File.createTempFile(storageReference.name, "jpg")
