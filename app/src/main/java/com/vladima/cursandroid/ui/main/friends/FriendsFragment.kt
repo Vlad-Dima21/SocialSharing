@@ -1,5 +1,6 @@
 package com.vladima.cursandroid.ui.main.friends
 
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.vladima.cursandroid.R
 import com.vladima.cursandroid.databinding.FragmentFriendsBinding
@@ -79,6 +81,28 @@ class FriendsFragment : Fragment() {
                 }
             }
         }
+
+        val btnAnimatorOffScreen = ObjectAnimator.ofFloat(binding.addFriends, "translationY", 300f)
+            .apply {
+                duration = 1000
+            }
+        val btnAnimatorOnScreen = ObjectAnimator.ofFloat(binding.addFriends, "translationY", 0f)
+            .apply {
+                duration = 1000
+            }
+
+        var scrollDown = false
+        binding.rvPosts.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0 && !scrollDown) {
+                    btnAnimatorOffScreen.start()
+                } else if (dy < 0 && scrollDown) {
+                    btnAnimatorOnScreen.start()
+                }
+                scrollDown = dy > 0
+            }
+        })
 
         binding.addFriends.setOnClickListener {
             startActivity(

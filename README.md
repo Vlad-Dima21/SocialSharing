@@ -9,6 +9,8 @@ Ce am implementat în aplicație:
 - link-ul partajat poate fi deschis în aplicație și declanșează un alert care întreabă utilizatorul dacă vrea să adauge prietenul (deep links)
 - cand un utilizator adauga un prieten, ambii primesc o notificare care deschide fragmentul de prieteni
 - utilizatorii pot face poze cu camera si le pot incarca
+- splash screen cu MotionLayout
+- FAB animat cu object animator
 - utilizatorii se pot loga în aplicație cu contul de Google
 - utilizatorii se loghează în aplicație cu Firebase Authentication
 - datele sunt persistate cu Firebase Firestore (datele de utilizator și detaliile postărilor)
