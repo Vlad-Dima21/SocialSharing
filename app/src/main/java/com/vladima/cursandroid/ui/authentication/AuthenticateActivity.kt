@@ -111,7 +111,7 @@ class AuthenticateActivity : ComponentActivity() {
                                 value = viewModel.email,
                                 onValueChange = { viewModel.email = it },
                                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.roundedCornerShape)),
-                                isError = listOf(R.string.WrongEmail, R.string.FieldsNotFilled).contains(errorMsg)
+                                isError = listOf(R.string.WrongEmail, R.string.FieldsNotFilled, R.string.EmailAlreadyInUse).contains(errorMsg)
                             )
                             OutlinedTextField(
                                 label = {

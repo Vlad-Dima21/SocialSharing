@@ -1,10 +1,14 @@
 package com.vladima.cursandroid.ui.authentication
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthEmailException
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.vladima.cursandroid.R
@@ -77,6 +81,9 @@ class AuthenticateViewModel: ViewModel() {
         }
         try {
             auth.createUserWithEmailAndPassword(email, password).await()
+        } catch (e: FirebaseAuthUserCollisionException) {
+            updateMessage(R.string.EmailAlreadyInUse)
+            return@launch
         } catch (e: Exception) {
             updateMessage(R.string.Error)
             return@launch
@@ -102,9 +109,13 @@ class AuthenticateViewModel: ViewModel() {
             else -> {}
         }
         try {
-            auth.createUserWithEmailAndPassword(email, password).await()
+            auth.signInWithEmailAndPassword(email, password).await()
+        } catch(e: FirebaseAuthInvalidCredentialsException) {
+            updateMessage(R.string.InvalidCredentials)
+            return@launch
         } catch (e: Exception) {
             updateMessage(R.string.Error)
+            Log.d("Eroare", e.stackTraceToString())
             return@launch
         }
         if (auth.currentUser == null) {

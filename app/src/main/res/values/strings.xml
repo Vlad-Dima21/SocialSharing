@@ -84,4 +84,6 @@
     <string name="WrongEmail">Invalid email</string>
     <string name="FieldsNotFilled">Please fill required fields</string>
     <string name="Error">There was an error</string>
+    <string name="InvalidCredentials">Invalid credentials</string>
+    <string name="EmailAlreadyInUse">Email already in use</string>
 </resources>
