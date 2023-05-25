@@ -1,19 +1,19 @@
-package com.vladima.cursandroid.ui.main.home
+package com.vladima.cursandroid.ui.main.friends
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.vladima.cursandroid.databinding.HomeImageViewholderBinding
+import com.vladima.cursandroid.databinding.FriendsImageViewholderBinding
+import com.vladima.cursandroid.models.RVFriendPost
 import com.vladima.cursandroid.models.RVUserPost
 
-class HomeAdapter(
-    private var posts: List<RVUserPost>
-): RecyclerView.Adapter<HomeAdapter.ImageViewHolder>() {
+class FriendsAdapter(private var posts: List<RVFriendPost>):
+    RecyclerView.Adapter<FriendsAdapter.ImageViewHolder>() {
 
-    inner class ImageViewHolder(val binding: HomeImageViewholderBinding) : RecyclerView.ViewHolder(binding.root)
+    inner class ImageViewHolder(val binding: FriendsImageViewholderBinding): RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
-        val binding = HomeImageViewholderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = FriendsImageViewholderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ImageViewHolder(binding)
     }
 
@@ -23,12 +23,13 @@ class HomeAdapter(
         with(holder) {
             with(posts[position]) {
                 binding.imageView.setImageBitmap(imageBitmap)
+                binding.authorName.text = authorName
                 binding.imageDescription.text = imageDescription
             }
         }
     }
 
-    fun setNewPosts(newList: List<RVUserPost>) {
+    fun setNewPosts(newList: List<RVFriendPost>) {
         posts = newList
         notifyDataSetChanged()
     }

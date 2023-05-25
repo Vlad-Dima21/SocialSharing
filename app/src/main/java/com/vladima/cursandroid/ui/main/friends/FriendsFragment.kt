@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.vladima.cursandroid.R
 import com.vladima.cursandroid.databinding.FragmentFriendsBinding
+import com.vladima.cursandroid.models.RVFriendPost
 import com.vladima.cursandroid.models.RVUserPost
 import com.vladima.cursandroid.ui.MarginItemDecoration
 import com.vladima.cursandroid.ui.main.home.HomeAdapter
@@ -26,8 +27,8 @@ import kotlinx.coroutines.withContext
 class FriendsFragment : Fragment() {
 
     private lateinit var binding: FragmentFriendsBinding
-    private var posts = listOf<RVUserPost>()
-    private var postsAdapter = HomeAdapter(listOf())
+    private var posts = listOf<RVFriendPost>()
+    private var postsAdapter = FriendsAdapter(listOf())
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

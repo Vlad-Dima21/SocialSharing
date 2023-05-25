@@ -19,6 +19,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.vladima.cursandroid.R
 import com.vladima.cursandroid.models.DbUserPost
+import com.vladima.cursandroid.models.RVFriendPost
 import com.vladima.cursandroid.models.RVUserPost
 import com.vladima.cursandroid.models.User
 import com.vladima.cursandroid.ui.main.MainActivity
@@ -49,7 +50,7 @@ class FriendsViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
     private val tempFiles = mutableListOf<File>()
-    private val _friendsPosts = MutableStateFlow(listOf<RVUserPost>())
+    private val _friendsPosts = MutableStateFlow(listOf<RVFriendPost>())
     val friendsPosts = _friendsPosts.asStateFlow()
 
     private lateinit var potentialFriendDoc: DocumentSnapshot
@@ -168,7 +169,7 @@ class FriendsViewModel @Inject constructor(
             .await().documents.map {
             it.toObject(User::class.java)!!
         }
-        val friendsPosts = mutableListOf<RVUserPost>()
+        val friendsPosts = mutableListOf<RVFriendPost>()
         friendsList?.forEach { friendUID ->
             val dbUserPosts =
                 userPostsCollection.whereEqualTo("userUID", friendUID).get().await().documents.map {
@@ -195,10 +196,11 @@ class FriendsViewModel @Inject constructor(
                                 ?: storageReference.name
                         val friendName = friends.find { it.userUID == friendUID }!!.userName
                         friendsPosts.add(
-                            RVUserPost(
+                            RVFriendPost(
                                 storageReference.name,
                                 bitmap,
-                                "\uD83D\uDC64$friendName:  $postDescription"
+                                friendName,
+                                postDescription
                             )
                         )
                     }

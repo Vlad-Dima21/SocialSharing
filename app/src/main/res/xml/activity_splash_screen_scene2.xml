@@ -10,12 +10,12 @@
         motion:autoTransition="animateToEnd">
        <KeyFrameSet>
            <KeyAttribute
-               motion:motionTarget="@+id/imageView2"
+               motion:motionTarget="@+id/splashIcon"
                motion:framePosition="70"
                android:scaleX="1"
                android:scaleY="1" />
            <KeyAttribute
-               motion:motionTarget="@+id/imageView2"
+               motion:motionTarget="@+id/splashIcon"
                motion:framePosition="20"
                android:scaleX="0"
                android:scaleY="0" />
@@ -28,12 +28,12 @@
                motion:framePosition="70"
                android:alpha="1" />
            <KeyAttribute
-               motion:motionTarget="@+id/imageView2"
+               motion:motionTarget="@+id/splashIcon"
                motion:framePosition="0"
                android:scaleX="0"
                android:scaleY="0" />
            <KeyAttribute
-               motion:motionTarget="@+id/textView"
+               motion:motionTarget="@+id/splashTitle"
                motion:framePosition="0"
                android:translationY="100dp" />
            <KeyAttribute
@@ -42,7 +42,7 @@
                android:scaleX="1"
                android:scaleY="1" />
            <KeyAttribute
-               motion:motionTarget="@+id/textView"
+               motion:motionTarget="@+id/splashTitle"
                motion:framePosition="100"
                android:scaleX="1.2"
                android:scaleY="1.2" />
