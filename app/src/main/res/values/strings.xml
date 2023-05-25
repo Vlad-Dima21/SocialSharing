@@ -81,4 +81,7 @@
     <string name="friend_already_added">Friend already added</string>
     <string name="logout">Logout</string>
     <string name="title_activity_splash_screen">SplashScreenActivity</string>
+    <string name="WrongEmail">Invalid email</string>
+    <string name="FieldsNotFilled">Please fill required fields</string>
+    <string name="Error">There was an error</string>
 </resources>

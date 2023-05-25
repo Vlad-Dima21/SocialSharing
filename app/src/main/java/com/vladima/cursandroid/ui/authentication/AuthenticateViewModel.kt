@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.vladima.cursandroid.R
 import com.vladima.cursandroid.models.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,31 +28,61 @@ class AuthenticateViewModel: ViewModel() {
 
     var authenticationMethod by mutableStateOf(0)
 
-    private val _errorMsg = MutableStateFlow("")
+    private val _errorMsg = MutableStateFlow<Int?>(null)
     val errorMsg = _errorMsg.asStateFlow()
     private val _isSuccess = MutableStateFlow(false)
     val isSuccess = _isSuccess.asStateFlow()
 
+    private val emailRegex = Regex("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}\$")
+
+    private enum class Validations {
+        WrongEmail,
+        FieldsNotFilled
+    }
+
     private val fieldsValidation
         get() = when (authenticationMethod) {
-            0 -> email.isNotEmpty() && password.isNotEmpty() && userName.isNotEmpty()
-            else -> email.isNotEmpty() && password.isNotEmpty()
+            0 -> {
+                if (!emailRegex.matches(email)) {
+                    Validations.WrongEmail
+                } else if (email.isEmpty() || password.isEmpty() || userName.isEmpty()) {
+                    Validations.FieldsNotFilled
+                } else {
+                    null
+                }
+            }
+            else -> {
+                if (!emailRegex.matches(email)) {
+                    Validations.WrongEmail
+                } else if (email.isEmpty() || password.isEmpty()) {
+                    Validations.FieldsNotFilled
+                } else {
+                    null
+                }
+            }
         }
 
 
     fun signUp() = CoroutineScope(Dispatchers.IO).launch {
-        if (!fieldsValidation) {
-            updateMessage("Please fill required fields")
-            return@launch
+        when(fieldsValidation) {
+            Validations.WrongEmail -> {
+                updateMessage(R.string.WrongEmail)
+                return@launch
+            }
+            Validations.FieldsNotFilled -> {
+                updateMessage(R.string.FieldsNotFilled)
+                return@launch
+            }
+            else -> {}
         }
         try {
             auth.createUserWithEmailAndPassword(email, password).await()
         } catch (e: Exception) {
-            updateMessage(e.message ?: "There was an error")
+            updateMessage(R.string.Error)
             return@launch
         }
         if (auth.currentUser == null) {
-            updateMessage("Couldn't sign up. Please try again")
+            updateMessage(R.string.Error)
             return@launch
         }
         usersCollection.add(User(auth.currentUser!!.uid, userName)).await()
@@ -59,26 +90,33 @@ class AuthenticateViewModel: ViewModel() {
     }
 
     fun logIn() = CoroutineScope(Dispatchers.IO).launch {
-        if (!fieldsValidation) {
-            updateMessage("Please fill required fields")
-            return@launch
+        when(fieldsValidation) {
+            Validations.WrongEmail -> {
+                updateMessage(R.string.WrongEmail)
+                return@launch
+            }
+            Validations.FieldsNotFilled -> {
+                updateMessage(R.string.FieldsNotFilled)
+                return@launch
+            }
+            else -> {}
         }
         try {
-            auth.signInWithEmailAndPassword(email, password).await()
+            auth.createUserWithEmailAndPassword(email, password).await()
         } catch (e: Exception) {
-            updateMessage(e.message ?: "There was an error")
+            updateMessage(R.string.Error)
             return@launch
         }
         if (auth.currentUser == null) {
-            updateMessage("Couldn't log in. Please try again")
+            updateMessage(R.string.Error)
             return@launch
         }
         _isSuccess.emit(true)
     }
 
-    private suspend fun updateMessage(msg: String) {
+    private suspend fun updateMessage(msg: Int) {
         _errorMsg.emit(msg)
-        delay(500)
-        _errorMsg.emit("")
+        delay(2000)
+        _errorMsg.emit(null)
     }
 }
